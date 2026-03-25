@@ -1,239 +1,160 @@
+import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import streamlit as st
 from matplotlib.ticker import PercentFormatter
 
-st.set_page_config(page_title="Sustainable Finance Portfolio Tool", layout="wide")
+# --- CONFIGURATION ---
+st.set_page_config(page_title="Sustainable Portfolio Tool", layout="wide")
 
-# ==========================================================
-# HELPER FUNCTIONS
-# ==========================================================
+# --- HELPER FUNCTIONS (Logic from your original code) ---
+def convert_to_100(score, agency):
+    agency = agency.lower()
+    if agency == "sustainalytics":
+        score = float(score)
+        if score >= 50: return 0.0
+        return max(0.0, min(100.0, 100 - (score / 50) * 100))
+    elif agency == "msci":
+        msci_map = {"ccc": 0.0, "b": 16.7, "bb": 33.4, "bbb": 50.1, "a": 66.8, "aa": 83.5, "aaa": 100.0}
+        return msci_map.get(str(score).strip().lower(), 0.0)
+    elif agency == "refinitiv":
+        refinitiv_map = {0: 0.0, 1: 10.0, 2: 25.0, 3: 50.0, 4: 75.0, 5: 95.0}
+        return refinitiv_map.get(int(float(score)), 0.0)
+    elif agency == "s&p":
+        return max(0.0, min(100.0, float(score)))
+    return 0.0
 
-def convert_100_to_1(score_100):
-    return score_100 / 100
-
-
-def get_esg_threshold(lambda_esg, esg1_100, esg2_100):
-    esg_min = min(esg1_100, esg2_100)
-    esg_max = max(esg1_100, esg2_100)
-    return esg_min + lambda_esg * (esg_max - esg_min)
-
-
-def portfolio_return(w1, r1, r2):
-    return w1 * r1 + (1 - w1) * r2
-
-
+def portfolio_return(w1, r1, r2): return w1 * r1 + (1 - w1) * r2
 def portfolio_sd(w1, sd1, sd2, rho):
-    return np.sqrt(
-        w1**2 * sd1**2 +
-        (1 - w1)**2 * sd2**2 +
-        2 * rho * w1 * (1 - w1) * sd1 * sd2
-    )
+    return np.sqrt(w1**2 * sd1**2 + (1-w1)**2 * sd2**2 + 2 * rho * w1 * (1-w1) * sd1 * sd2)
+def portfolio_esg(w1, esg1, esg2): return w1 * esg1 + (1 - w1) * esg2
 
+# --- STREAMLIT UI ---
+st.title("🌱 Sustainable Finance Portfolio Tool")
+st.markdown("Compare two investments based on financial performance, risk, and ESG preferences.")
 
-def portfolio_esg(w1, esg1, esg2):
-    return w1 * esg1 + (1 - w1) * esg2
-
-
-# ==========================================================
-# CORE CALCULATIONS
-# ==========================================================
-
-def run_calculations(r1, r2, sd1, sd2, rho, r_free, gamma,
-                     esg1_100, esg2_100, lambda_esg):
-
-    weights = np.linspace(0, 1, 1000)
-    returns, risks, esg_scores_100, sharpe_ratios = [], [], [], []
-
-    for w in weights:
-        ret = portfolio_return(w, r1, r2)
-        sd = portfolio_sd(w, sd1, sd2, rho)
-        esg = portfolio_esg(w, esg1_100, esg2_100)
-
-        returns.append(ret)
-        risks.append(sd)
-        esg_scores_100.append(esg)
-
-        sharpe = (ret - r_free) / sd if sd > 0 else -np.inf
-        sharpe_ratios.append(sharpe)
-
-    max_idx = np.argmax(sharpe_ratios)
-
-    esg_threshold = get_esg_threshold(lambda_esg, esg1_100, esg2_100)
-
-    eligible = [
-        i for i in range(len(weights))
-        if esg_scores_100[i] >= esg_threshold
-    ]
-
-    if not eligible:
-        return None, "No portfolios satisfy ESG constraint"
-
-    esg_sharpes = [
-        (returns[i] - r_free) / risks[i] if risks[i] > 0 else -np.inf
-        for i in eligible
-    ]
-
-    best_esg_idx = eligible[np.argmax(esg_sharpes)]
-
-    def alloc(ret, sd):
-        if gamma > 0 and sd > 0:
-            y = (ret - r_free) / (gamma * sd**2)
-            y = min(max(y, 0), 1)
-            return y, 1 - y
-        return np.nan, np.nan
-
-    y_all, rf_all = alloc(returns[max_idx], risks[max_idx])
-    y_esg, rf_esg = alloc(returns[best_esg_idx], risks[best_esg_idx])
-
-    return dict(
-        weights=weights,
-        returns=returns,
-        risks=risks,
-        esg_scores_100=esg_scores_100,
-        sharpe_ratios=sharpe_ratios,
-
-        max_sharpe_index=max_idx,
-        max_sharpe_esg_index=eligible.index(best_esg_idx),
-
-        w1_tangency=weights[max_idx],
-        w2_tangency=1 - weights[max_idx],
-        ret_tangency=returns[max_idx],
-        sd_tangency=risks[max_idx],
-        esg_tangency_100=esg_scores_100[max_idx],
-
-        w1_tangency_esg=weights[best_esg_idx],
-        w2_tangency_esg=1 - weights[best_esg_idx],
-        ret_tangency_esg=returns[best_esg_idx],
-        sd_tangency_esg=risks[best_esg_idx],
-        esg_tangency_esg_100=esg_scores_100[best_esg_idx],
-
-        eligible_sharpes=esg_sharpes,
-        esg_threshold=esg_threshold,
-
-        y_all=y_all, rf_all=rf_all,
-        y_esg=y_esg, rf_esg=rf_esg
-    ), None
-
-
-# ==========================================================
-# UI
-# ==========================================================
-
-st.title("Sustainable Finance Portfolio Tool")
-
+# --- SIDEBAR: ESG METHOD & RISK PREFERENCE ---
 with st.sidebar:
+    st.header("1. Preferences")
+    
+    # ESG Method
+    esg_method = st.radio("ESG Information Method", 
+                          ["Overall ESG score", "Separate E, S, and G scores"])
+    use_separate = (esg_method == "Separate E, S, and G scores")
+    
+    w_e, w_s, w_g = 33.3, 33.3, 33.4
+    if use_separate:
+        st.subheader("Pillar Weights (%)")
+        w_e = st.number_input("Environmental", 0, 100, 33)
+        w_s = st.number_input("Social", 0, 100, 33)
+        w_g = st.number_input("Governance", 0, 100, 34)
+        if (w_e + w_s + w_g) != 100:
+            st.error("Weights must sum to 100%!")
 
-    st.header("Inputs")
+    # Risk Questionnaire
+    st.markdown("---")
+    st.subheader("Risk Preference (Gamma)")
+    know_gamma = st.radio("Do you know your Gamma?", ["Yes", "Not Sure (Take Quiz)"])
+    
+    if know_gamma == "Yes":
+        gamma = st.slider("Select Gamma (-10 to 10)", -10.0, 10.0, 2.0)
+    else:
+        with st.expander("Risk Questionnaire"):
+            q1 = st.selectbox("General attitude to risk?", [1,2,3,4,5], format_func=lambda x: ["Avoid risk", "Low-risk", "Moderate", "High-return seeking", "High-risk seeker"][x-1])
+            q2 = st.selectbox("Prefer slow/steady growth?", [1,2,3,4,5], format_func=lambda x: ["Strongly Agree", "Agree", "In-between", "Disagree", "Strongly Disagree"][x-1])
+            q3 = st.selectbox("Reaction to 20% drop?", [1,2,3,4,5], format_func=lambda x: ["Sell all", "Sell some", "Wait", "Stay course", "Buy more"][x-1])
+            avg = (q1 + q2 + q3) / 3
+            if avg <= 1.5: gamma = 8.0
+            elif avg <= 2.5: gamma = 4.0
+            elif avg <= 3.5: gamma = 0.0
+            elif avg <= 4.5: gamma = -4.0
+            else: gamma = -8.0
+            st.info(f"Calculated Gamma: {gamma}")
 
-    esg_method = st.radio(
-        "ESG Input Method",
-        ["Overall ESG score", "Separate E, S, G scores"]
-    )
+    # ESG Preference
+    st.markdown("---")
+    lambda_choice = st.selectbox("Accept lower return for better ESG?", 
+                                 ["No reduction", "Small reduction", "Moderate reduction", "Significant reduction"])
+    lambda_esg = {"No reduction": 0.0, "Small reduction": 0.25, "Moderate reduction": 0.75, "Significant reduction": 1.0}[lambda_choice]
 
-    use_separate_scores = esg_method == "Separate E, S, G scores"
+# --- MAIN PAGE: ASSET DATA ---
+col1, col2 = st.columns(2)
 
-    pillar_weights = None
+def get_asset_input(suffix, default_name):
+    name = st.text_input(f"Asset {suffix} Name", default_name)
+    ret = st.number_input(f"{name} Expected Return (%)", value=8.0) / 100
+    vol = st.number_input(f"{name} Volatility (%)", value=15.0) / 100
+    agency = st.selectbox(f"{name} Agency", ["MSCI", "Sustainalytics", "Refinitiv", "S&P"], key=f"agency_{suffix}")
+    
+    if use_separate:
+        e = st.text_input(f"{name} E Score", "50", key=f"e_{suffix}")
+        s = st.text_input(f"{name} S Score", "50", key=f"s_{suffix}")
+        g = st.text_input(f"{name} G Score", "50", key=f"g_{suffix}")
+        e100 = convert_to_100(e, agency)
+        s100 = convert_to_100(s, agency)
+        g100 = convert_to_100(g, agency)
+        overall100 = (w_e/100)*e100 + (w_s/100)*s100 + (w_g/100)*g100
+    else:
+        score = st.text_input(f"{name} Overall ESG Score", "50", key=f"score_{suffix}")
+        overall100 = convert_to_100(score, agency)
+        
+    return name, ret, vol, overall100
 
-    if use_separate_scores:
-        w_e = st.number_input("E weight", 0.0, 100.0, 33.3)
-        w_s = st.number_input("S weight", 0.0, 100.0, 33.3)
-        w_g = st.number_input("G weight", 0.0, 100.0, 33.4)
-        pillar_weights = (w_e, w_s, w_g)
+with col1:
+    n1, r1, sd1, esg1_100 = get_asset_input("1", "Apple")
+with col2:
+    n2, r2, sd2, esg2_100 = get_asset_input("2", "Tesla")
 
-    asset1_name = st.text_input("Asset 1", "Asset 1")
-    asset2_name = st.text_input("Asset 2", "Asset 2")
+rho = st.slider("Correlation Coefficient", -1.0, 1.0, 0.2)
+r_free = st.number_input("Risk-free Rate (%)", value=2.0) / 100
 
-    r1 = st.number_input("Return 1 (%)", 8.0) / 100
-    r2 = st.number_input("Return 2 (%)", 10.0) / 100
+# --- CALCULATIONS ---
+if st.button("🚀 Run Portfolio Analysis"):
+    weights = np.linspace(0, 1, 1000)
+    esg_threshold = min(esg1_100, esg2_100) + lambda_esg * (max(esg1_100, esg2_100) - min(esg1_100, esg2_100))
+    
+    res = []
+    for w in weights:
+        p_ret = portfolio_return(w, r1, r2)
+        p_sd = portfolio_sd(w, sd1, sd2, rho)
+        p_esg = portfolio_esg(w, esg1_100, esg2_100)
+        sharpe = (p_ret - r_free) / p_sd if p_sd > 0 else 0
+        res.append([w, p_ret, p_sd, p_esg, sharpe])
+    
+    df = pd.DataFrame(res, columns=['w1', 'ret', 'sd', 'esg', 'sharpe'])
+    
+    # Optimal Portfolios
+    opt_no_esg = df.iloc[df['sharpe'].idxmax()]
+    eligible = df[df['esg'] >= esg_threshold]
+    
+    if eligible.empty:
+        st.error("No portfolios satisfy the ESG threshold.")
+    else:
+        opt_esg = eligible.iloc[eligible['sharpe'].idxmax()]
+        
+        # Display Tables
+        st.subheader("Analysis Results")
+        comp_data = {
+            "Metric": [f"{n1} Weight", f"{n2} Weight", "Return", "Risk", "ESG Score", "Sharpe Ratio"],
+            "Unconstrained": [f"{opt_no_esg['w1']*100:.1f}%", f"{(1-opt_no_esg['w1'])*100:.1f}%", f"{opt_no_esg['ret']*100:.2f}%", f"{opt_no_esg['sd']*100:.2f}%", f"{opt_no_esg['esg']:.1f}", f"{opt_no_esg['sharpe']:.3f}"],
+            "ESG Constrained": [f"{opt_esg['w1']*100:.1f}%", f"{(1-opt_esg['w1'])*100:.1f}%", f"{opt_esg['ret']*100:.2f}%", f"{opt_esg['sd']*100:.2f}%", f"{opt_esg['esg']:.1f}", f"{opt_esg['sharpe']:.3f}"]
+        }
+        st.table(pd.DataFrame(comp_data))
 
-    sd1 = st.number_input("Volatility 1 (%)", 15.0) / 100
-    sd2 = st.number_input("Volatility 2 (%)", 20.0) / 100
-
-    rho = st.slider("Correlation", -1.0, 1.0, 0.3)
-
-    r_free = st.number_input("Risk-free (%)", 2.0) / 100
-    gamma = st.slider("Gamma", -10.0, 10.0, 2.0)
-
-    esg1_100 = st.number_input("ESG 1", 50.0)
-    esg2_100 = st.number_input("ESG 2", 60.0)
-
-    lambda_esg = st.selectbox("Lambda", [0.0, 0.25, 0.75, 1.0])
-
-    run_button = st.button("Run Analysis")
-
-
-# ==========================================================
-# MAIN
-# ==========================================================
-
-if not run_button:
-    st.stop()
-
-# FIXED VALIDATION
-if use_separate_scores:
-    if pillar_weights is None:
-        st.error("Missing ESG weights")
-        st.stop()
-
-    w_e, w_s, w_g = pillar_weights
-
-    if abs((w_e + w_s + w_g) - 100) > 0.1:
-        st.error("Weights must sum to 100")
-        st.stop()
-
-res, err = run_calculations(
-    r1, r2, sd1, sd2, rho, r_free, gamma,
-    esg1_100, esg2_100, lambda_esg
-)
-
-if err:
-    st.error(err)
-    st.stop()
-
-st.write("## Portfolio Comparison")
-
-st.dataframe(pd.DataFrame({
-    "Metric": ["Return", "Risk", "ESG"],
-    "No ESG": [
-        res["ret_tangency"],
-        res["sd_tangency"],
-        res["esg_tangency_100"]
-    ],
-    "With ESG": [
-        res["ret_tangency_esg"],
-        res["sd_tangency_esg"],
-        res["esg_tangency_esg_100"]
-    ]
-}))
-
-
-# ==========================================================
-# GRAPHS (UNCHANGED)
-# ==========================================================
-
-def build_frontier_figure():
-    fig, ax = plt.subplots()
-
-    ax.plot(res["risks"], res["returns"])
-
-    ax.scatter(res["sd_tangency"], res["ret_tangency"])
-    ax.scatter(res["sd_tangency_esg"], res["ret_tangency_esg"])
-
-    ax.set_xlabel("Risk")
-    ax.set_ylabel("Return")
-
-    return fig
-
-
-def build_esg_sharpe():
-    fig, ax = plt.subplots()
-
-    ax.scatter(res["esg_scores_100"], res["sharpe_ratios"])
-
-    return fig
-
-
-st.pyplot(build_frontier_figure())
-st.pyplot(build_esg_sharpe())
+        # Plots
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+        
+        # Efficient Frontier
+        ax1.plot(df['sd'], df['ret'], color='gray', linestyle='--', label='Possible Portfolios')
+        ax1.plot(eligible['sd'], eligible['ret'], color='green', label='ESG Eligible')
+        ax1.scatter(opt_no_esg['sd'], opt_no_esg['ret'], marker='*', s=200, label='Optimal (No ESG)')
+        ax1.scatter(opt_esg['sd'], opt_esg['ret'], marker='*', s=200, color='green', label='Optimal (ESG)')
+        ax1.set_xlabel("Risk (SD)"); ax1.set_ylabel("Return")
+        ax1.legend()
+        
+        # ESG vs Sharpe
+        ax2.plot(df['esg'], df['sharpe'], color='red')
+        ax2.axvline(esg_threshold, color='black', linestyle=':', label='Min ESG')
+        ax2.set_xlabel("ESG Score"); ax2.set_ylabel("Sharpe Ratio")
+        
+        st.pyplot(fig)
