@@ -57,10 +57,10 @@ html, body, [class*="css"] {
 .page-header h1 {
     font-family: 'Playfair Display', serif;
     font-size: 42px;
-    color: #10281c;
+    color: #ffffff;
     margin-bottom: 4px;
 }
-.page-header p { color: #5f7d6c; margin-top: 0; }
+.page-header p { color: #ffffff; margin-top: 0; }
 
 .section-label {
     font-size: 11px;
