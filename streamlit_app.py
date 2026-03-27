@@ -21,7 +21,7 @@ st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap');
 
-html, body, [class*="css"] {
+html, body, [class*="st-"] {
     font-family: 'Inter', sans-serif;
     background-color: #f4f7f5;
     color: #1c2b22;
@@ -79,6 +79,18 @@ html, body, [class*="css"] {
     padding: 22px;
     box-shadow: 0 6px 18px rgba(16,40,28,0.04);
     margin-bottom: 12px;
+    color: #1c2b22; /* Ensure dark text for card content */
+}
+
+/* FIX: Specific targeting for labels within cards */
+.card .label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #6b8f7b !important; /* Forces a grey-green visible color */
+    margin-bottom: 8px;
+    display: block;
 }
 
 .metric-tile {
@@ -130,12 +142,6 @@ html, body, [class*="css"] {
     color: #dbece0;
 }
 
-/* REMOVE alternating white rows */
-.cmp-table tr:nth-child(even) td { 
-    background: transparent; 
-}
-
-/* subtle hover instead */
 .cmp-table tr:hover td {
     background: rgba(111, 207, 151, 0.06);
 }
@@ -147,25 +153,21 @@ html, body, [class*="css"] {
     font-size: 15px;
     font-weight: 700;
     letter-spacing: 0.02em;
-    color: #10281c !important;   /* FORCE visible text */
 }
 
-/* positive = green */
 .chip-pos { 
     background: rgba(34,197,94,0.12);
-    color: #22c55e !important;
+    color: #16a34a !important;
 }
 
-/* negative = red */
 .chip-neg { 
     background: rgba(239,68,68,0.12);
-    color: #ef4444 !important;
+    color: #dc2626 !important;
 }
 
-/* neutral = grey */
 .chip-neu { 
     background: rgba(148,163,184,0.12);
-    color: #94a3b8 !important;
+    color: #475569 !important;
 }
 
 hr.fancy-divider {
@@ -198,7 +200,7 @@ hr.fancy-divider {
 
 
 # ──────────────────────────────────────────────────────────
-# CORE LOGIC (from original top code — unchanged)
+# CORE LOGIC
 # ──────────────────────────────────────────────────────────
 def portfolio_return(w1, r1, r2):
     return w1 * r1 + (1 - w1) * r2
@@ -319,9 +321,7 @@ sb.markdown("""
 """, unsafe_allow_html=True)
 sb.markdown("---")
 
-# ── Assets ────────────────────────────────────────────────
 sb.markdown("### Assets & Market Data")
-
 asset1_name = sb.text_input("Asset 1 Name", "Apple")
 asset2_name = sb.text_input("Asset 2 Name", "Microsoft")
 
@@ -344,71 +344,52 @@ rho    = sb.slider("Correlation Coefficient (ρ)", -1.0, 1.0, 0.2, 0.01)
 r_free = sb.number_input("Risk-free Rate %", value=2.0) / 100
 sb.markdown("---")
 
-# ── Risk Preference ───────────────────────────────────────
+# Risk Preference
 sb.markdown("### Risk Preference")
 gamma_mode = sb.radio("Determine your Risk Aversion (γ):",
                       ["Manual Entry", "Questionnaire"], key="gamma_mode")
 
 if gamma_mode == "Manual Entry":
-    gamma = sb.slider("Gamma  (−10 = risk-loving · 0 = neutral · +10 = risk-averse)",
-                      -10.0, 10.0, 3.0, 0.5)
+    gamma = sb.slider("Gamma", -10.0, 10.0, 3.0, 0.5)
 else:
-    sb.caption("Answer all 5 questions honestly.")
-    q1 = sb.selectbox("Q1. Attitude toward risk?",
-        ["1. Avoid risk", "2. Low-risk steady", "3. Moderate",
-         "4. High return focus", "5. High-risk seeker"])
-    q2 = sb.selectbox("Q2. Prefer slow but steady growth?",
-        ["1. Strongly Agree", "2. Agree", "3. Neutral", "4. Disagree", "5. Strongly Disagree"])
-    q3 = sb.selectbox("Q3. Reaction to 20% portfolio drop?",
-        ["1. Sell all", "2. Sell some", "3. Do nothing", "4. Stay course", "5. Buy more"])
-    q4 = sb.selectbox("Q4. Comfort with high-risk/reward investments?",
-        ["1. Very little", "2. < 25%", "3. ~50%", "4. > 50%", "5. All of it"])
-    q5 = sb.selectbox("Q5. Prefer small guaranteed over large uncertain?",
-        ["1. Strongly Agree", "2. Agree", "3. Neutral", "4. Disagree", "5. Strongly Disagree"])
-
+    q1 = sb.selectbox("Q1. Attitude toward risk?", ["1. Avoid risk", "2. Low-risk steady", "3. Moderate", "4. High return focus", "5. High-risk seeker"])
+    q2 = sb.selectbox("Q2. Prefer slow but steady growth?", ["1. Strongly Agree", "2. Agree", "3. Neutral", "4. Disagree", "5. Strongly Disagree"])
+    q3 = sb.selectbox("Q3. Reaction to 20% portfolio drop?", ["1. Sell all", "2. Sell some", "3. Do nothing", "4. Stay course", "5. Buy more"])
+    q4 = sb.selectbox("Q4. Comfort with high-risk/reward investments?", ["1. Very little", "2. < 25%", "3. ~50%", "4. > 50%", "5. All of it"])
+    q5 = sb.selectbox("Q5. Prefer small guaranteed over large uncertain?", ["1. Strongly Agree", "2. Agree", "3. Neutral", "4. Disagree", "5. Strongly Disagree"])
     avg_score = (int(q1[0]) + int(q2[0]) + int(q3[0]) + int(q4[0]) + int(q5[0])) / 5
-    if   avg_score <= 1.5: gamma, label = 8.0,  "Very Cautious"
-    elif avg_score <= 2.3: gamma, label = 4.0,  "Cautious"
-    elif avg_score <= 3.2: gamma, label = 0.0,  "Moderate / Risk-Neutral"
+    if avg_score <= 1.5: gamma, label = 8.0, "Very Cautious"
+    elif avg_score <= 2.3: gamma, label = 4.0, "Cautious"
+    elif avg_score <= 3.2: gamma, label = 0.0, "Moderate"
     elif avg_score <= 4.1: gamma, label = -4.0, "Adventurous"
-    else:                  gamma, label = -8.0, "Very Adventurous"
-    sb.success(f"Profile: **{label}** · γ = {gamma}")
+    else: gamma, label = -8.0, "Very Adventurous"
+    sb.success(f"Profile: **{label}**")
 
 sb.markdown("---")
-
-# ── ESG Preference ────────────────────────────────────────
 sb.markdown("### ESG Preference")
-lambda_choice = sb.select_slider(
-    "Willingness to sacrifice return for ESG alignment:",
-    options=["None", "Small", "Moderate", "Significant"])
-l_map     = {"None": 0.0, "Small": 0.25, "Moderate": 0.75, "Significant": 1.0}
+lambda_choice = sb.select_slider("Willingness to sacrifice return:", options=["None", "Small", "Moderate", "Significant"])
+l_map = {"None": 0.0, "Small": 0.25, "Moderate": 0.75, "Significant": 1.0}
 lambda_esg = l_map[lambda_choice]
-sb.markdown("---")
 
-# ── ESG Scores ────────────────────────────────────────────
+sb.markdown("---")
 sb.markdown("### ESG Scores")
-esg_method = sb.radio("How would you like to enter ESG data?",
-                      ["Overall ESG Score", "Separate E, S, and G Pillars"])
+esg_method = sb.radio("Entry Method", ["Overall ESG Score", "Separate E, S, and G Pillars"])
 
 weights_ok = True
 w_e = w_s = w_g = 33
 
 if esg_method == "Separate E, S, and G Pillars":
-    sb.markdown("**Pillar Weights (must sum to 100%)**")
     cw1, cw2, cw3 = sb.columns(3)
-    w_e = cw1.number_input("E %", 0, 100, 34, key="we")
-    w_s = cw2.number_input("S %", 0, 100, 33, key="ws")
-    w_g = cw3.number_input("G %", 0, 100, 33, key="wg")
+    w_e = cw1.number_input("E %", 0, 100, 34)
+    w_s = cw2.number_input("S %", 0, 100, 33)
+    w_g = cw3.number_input("G %", 0, 100, 33)
     weights_ok = (w_e + w_s + w_g) == 100
-    if not weights_ok:
-        sb.warning(f"Weights sum to {w_e+w_s+w_g}% — must equal 100%.")
 
 def get_agency_input(name, agency, key_pref):
     if agency == "MSCI":
-        val = sb.selectbox(f"{name} MSCI Rating",
-                           ["CCC","B","BB","BBB","A","AA","AAA"], index=3, key=f"{key_pref}_m")
+        val = sb.selectbox(f"{name} Rating", ["CCC","B","BB","BBB","A","AA","AAA"], index=3, key=f"{key_pref}_m")
     elif agency == "Refinitiv":
-        val = sb.number_input(f"{name} Score (0–5)", 0, 5, 3, key=f"{key_pref}_r")
+        val = sb.number_input(f"{name} (0–5)", 0, 5, 3, key=f"{key_pref}_r")
     else:
         val = sb.number_input(f"{name} Score", value=50.0, key=f"{key_pref}_s")
     return convert_to_100(val, agency)
@@ -421,7 +402,6 @@ else:
     s1 = get_agency_input(f"{asset1_name} S", agency1, "p1s")
     g1 = get_agency_input(f"{asset1_name} G", agency1, "p1g")
     esg1_100 = (w_e/100)*e1 + (w_s/100)*s1 + (w_g/100)*g1
-sb.caption(f"Normalised: **{esg1_100:.1f} / 100**")
 
 sb.markdown(f"**{asset2_name}**")
 if esg_method == "Overall ESG Score":
@@ -431,14 +411,13 @@ else:
     s2 = get_agency_input(f"{asset2_name} S", agency2, "p2s")
     g2 = get_agency_input(f"{asset2_name} G", agency2, "p2g")
     esg2_100 = (w_e/100)*e2 + (w_s/100)*s2 + (w_g/100)*g2
-sb.caption(f"Normalised: **{esg2_100:.1f} / 100**")
 
 sb.markdown("---")
-run = sb.button("Calculate Portfolio ›", key="run")
+run = sb.button("Calculate Portfolio ›")
 
 
 # ──────────────────────────────────────────────────────────
-# MAIN PAGE HEADER
+# MAIN PAGE
 # ──────────────────────────────────────────────────────────
 st.markdown("""
 <div class="page-header">
@@ -448,26 +427,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 if not run:
-    st.markdown("""
-    <div class="info-box">
-      👈  Fill in your asset details and preferences in the sidebar, then click
-      <strong>Calculate Portfolio</strong> to see your results.
-    </div>""", unsafe_allow_html=True)
+    st.markdown('<div class="info-box">👈 Fill in your details and click <strong>Calculate Portfolio</strong>.</div>', unsafe_allow_html=True)
     st.stop()
 
 if not weights_ok:
-    st.markdown("""
-    <div class="warn-box">
-      ⚠️ ESG pillar weights must sum to 100%. Please adjust them in the sidebar.
-    </div>""", unsafe_allow_html=True)
+    st.error("Weights must sum to 100%")
     st.stop()
 
-
-# ──────────────────────────────────────────────────────────
-# CALCULATIONS (original logic — unchanged)
-# ──────────────────────────────────────────────────────────
+# Calculations
 esg_threshold = min(esg1_100, esg2_100) + lambda_esg * (max(esg1_100, esg2_100) - min(esg1_100, esg2_100))
-
 weights  = np.linspace(0, 1, 1000)
 rets     = portfolio_return(weights, r1, r2)
 vols     = portfolio_sd(weights, sd1, sd2, rho)
@@ -478,226 +446,76 @@ idx_all  = np.argmax(sharpes)
 eligible = np.where(esgs >= esg_threshold)[0]
 
 if len(eligible) == 0:
-    st.error("No portfolios satisfy the ESG threshold. "
-             "Try reducing your ESG preference.")
+    st.error("No portfolios satisfy the ESG threshold.")
     st.stop()
 
 idx_esg = eligible[np.argmax(sharpes[eligible])]
 
-w1_all  = weights[idx_all];  w1_esg = weights[idx_esg]
-ret_all = rets[idx_all];     ret_esg = rets[idx_esg]
-vol_all = vols[idx_all];     vol_esg = vols[idx_esg]
-esg_all = esgs[idx_all];     esg_opt = esgs[idx_esg]
-sh_all  = sharpes[idx_all];  sh_esg  = sharpes[idx_esg]
+w1_esg = weights[idx_esg]; ret_esg = rets[idx_esg]; vol_esg = vols[idx_esg]; esg_opt = esgs[idx_esg]; sh_esg = sharpes[idx_esg]
+w1_all = weights[idx_all]; ret_all = rets[idx_all]; vol_all = vols[idx_all]; esg_all = esgs[idx_all]; sh_all = sharpes[idx_all]
 
-d_ret = ret_esg - ret_all
-d_sd  = vol_esg - vol_all
-d_esg = esg_opt - esg_all
+d_ret, d_sd, d_esg = ret_esg - ret_all, vol_esg - vol_all, esg_opt - esg_all
 
-# ──────────────────────────────────────────────────────────
-# SECTION 1 · ESG OPTIMAL PORTFOLIO (FIXED)
-# ──────────────────────────────────────────────────────────
+# SECTION 1
 st.markdown('<div class="section-label">ESG Optimal Portfolio</div>', unsafe_allow_html=True)
-
-col_alloc, col_ring, col_metrics = st.columns([2.4, 1.2, 2.4])
-
-with col_alloc:
-    with st.container():
-        st.markdown(f"""
-        <div class="card">
-            <div style="font-weight:600;margin-bottom:12px;">Asset Allocation</div>
-            {alloc_bar_html(w1_esg, 1 - w1_esg, asset1_name, asset2_name)}
-        </div>
-        """, unsafe_allow_html=True)
-
-with col_ring:
-    with st.container():
-        st.markdown(progress_ring_html(esg_opt, "Portfolio ESG"), unsafe_allow_html=True)
-
-with col_metrics:
-    with st.container():
-        st.markdown(metric_tile("Expected Return",  f"{ret_esg*100:.2f}%", "Annualised"), unsafe_allow_html=True)
-        st.markdown(metric_tile("Risk (Std Dev)",   f"{vol_esg*100:.2f}%", "Annualised"), unsafe_allow_html=True)
-        st.markdown(metric_tile("Sharpe Ratio",     f"{sh_esg:.4f}",       "Risk-adjusted return"), unsafe_allow_html=True)
-
-st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
+c_alloc, c_ring, c_metrics = st.columns([2.4, 1.2, 2.4])
+with c_alloc:
+    st.markdown(f'<div class="card"><span class="label">Asset Allocation</span>{alloc_bar_html(w1_esg, 1-w1_esg, asset1_name, asset2_name)}</div>', unsafe_allow_html=True)
+with c_ring:
+    st.markdown(progress_ring_html(esg_opt, "Portfolio ESG"), unsafe_allow_html=True)
+with c_metrics:
+    st.markdown(metric_tile("Expected Return", f"{ret_esg*100:.2f}%", "Annualised"), unsafe_allow_html=True)
+    st.markdown(metric_tile("Risk (Std Dev)", f"{vol_esg*100:.2f}%", "Annualised"), unsafe_allow_html=True)
+    st.markdown(metric_tile("Sharpe Ratio", f"{sh_esg:.4f}", "Risk-adjusted"), unsafe_allow_html=True)
 
 st.markdown('<hr class="fancy-divider">', unsafe_allow_html=True)
 
-
-# ──────────────────────────────────────────────────────────
-# SECTION 2 · PORTFOLIO COMPARISON TABLE
-# ──────────────────────────────────────────────────────────
+# SECTION 2
 st.markdown('<div class="section-label">Portfolio Comparison</div>', unsafe_allow_html=True)
-
-table_rows = [
-    (f"{asset1_name} weight",   f"{w1_esg*100:.2f}%",      f"{w1_all*100:.2f}%"),
-    (f"{asset2_name} weight",   f"{(1-w1_esg)*100:.2f}%",  f"{(1-w1_all)*100:.2f}%"),
-    ("Expected return",          f"{ret_esg*100:.2f}%",     f"{ret_all*100:.2f}%"),
-    ("Risk (Std Dev)",           f"{vol_esg*100:.2f}%",     f"{vol_all*100:.2f}%"),
-    ("ESG score (0–100)",        f"{esg_opt:.2f}",          f"{esg_all:.2f}"),
-    ("Sharpe ratio",             f"{sh_esg:.4f}",           f"{sh_all:.4f}"),
-]
-
-table_html = """
+st.markdown(f"""
 <table class="cmp-table">
-  <thead><tr>
-    <th>Metric</th>
-    <th>✅ ESG-Constrained</th>
-    <th>📈 Unconstrained</th>
-  </tr></thead>
+  <thead><tr><th>Metric</th><th>✅ ESG-Constrained</th><th>📈 Unconstrained</th></tr></thead>
   <tbody>
-"""
-for r in table_rows:
-    table_html += f"<tr><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td></tr>"
-table_html += "</tbody></table>"
-st.markdown(table_html, unsafe_allow_html=True)
+    <tr><td>Expected return</td><td>{ret_esg*100:.2f}%</td><td>{ret_all*100:.2f}%</td></tr>
+    <tr><td>Risk (Std Dev)</td><td>{vol_esg*100:.2f}%</td><td>{vol_all*100:.2f}%</td></tr>
+    <tr><td>ESG score</td><td>{esg_opt:.2f}</td><td>{esg_all:.2f}</td></tr>
+    <tr><td>Sharpe ratio</td><td>{sh_esg:.4f}</td><td>{sh_all:.4f}</td></tr>
+  </tbody>
+</table>""", unsafe_allow_html=True)
 
 st.markdown('<hr class="fancy-divider">', unsafe_allow_html=True)
 
-
-# ──────────────────────────────────────────────────────────
-# SECTION 3 · IMPACT OF ESG CONSTRAINT
-# ──────────────────────────────────────────────────────────
+# SECTION 3 - THE FIXED LABELS
 st.markdown('<div class="section-label">Impact of ESG Constraint</div>', unsafe_allow_html=True)
-
 ic1, ic2, ic3 = st.columns(3)
 with ic1:
-    st.markdown(f"""
-    <div class="card" style="text-align:center;">
-      <div class="label" style="text-align:center;margin-bottom:8px;">Return change</div>
-      {chip_html(d_ret * 100, " pp")}
-      <div style="font-size:11px;color:#9ca3af;margin-top:6px;">vs unconstrained</div>
-    </div>""", unsafe_allow_html=True)
+    st.markdown(f'<div class="card" style="text-align:center;"><span class="label">Return change</span>{chip_html(d_ret*100, " pp")}<div style="font-size:11px;color:#9ca3af;margin-top:6px;">vs unconstrained</div></div>', unsafe_allow_html=True)
 with ic2:
-    st.markdown(f"""
-    <div class="card" style="text-align:center;">
-      <div class="label" style="text-align:center;margin-bottom:8px;">Risk change</div>
-      {chip_html(d_sd * 100, " pp")}
-      <div style="font-size:11px;color:#9ca3af;margin-top:6px;">vs unconstrained</div>
-    </div>""", unsafe_allow_html=True)
+    st.markdown(f'<div class="card" style="text-align:center;"><span class="label">Risk change</span>{chip_html(d_sd*100, " pp")}<div style="font-size:11px;color:#9ca3af;margin-top:6px;">vs unconstrained</div></div>', unsafe_allow_html=True)
 with ic3:
-    st.markdown(f"""
-    <div class="card" style="text-align:center;">
-      <div class="label" style="text-align:center;margin-bottom:8px;">ESG score gain</div>
-      {chip_html(d_esg, " pts", decimals=1)}
-      <div style="font-size:11px;color:#9ca3af;margin-top:6px;">vs unconstrained</div>
-    </div>""", unsafe_allow_html=True)
+    st.markdown(f'<div class="card" style="text-align:center;"><span class="label">ESG score gain</span>{chip_html(d_esg, " pts", decimals=1)}<div style="font-size:11px;color:#9ca3af;margin-top:6px;">vs unconstrained</div></div>', unsafe_allow_html=True)
 
-st.markdown("<br>", unsafe_allow_html=True)
-
-if idx_all == idx_esg:
-    st.markdown("""
-    <div class="info-box">
-      The unconstrained optimal portfolio already meets your ESG threshold —
-      applying the constraint has no material effect on the allocation.
-    </div>""", unsafe_allow_html=True)
-else:
-    st.markdown(f"""
-    <div class="info-box">
-      Your ESG preference requires a minimum portfolio score of <strong>{esg_threshold:.2f}</strong>.
-      The portfolio was adjusted to meet this, shifting weight towards the higher-rated asset.
-      The chips above show the cost (return / risk) and benefit (ESG score) of that tilt.
-    </div>""", unsafe_allow_html=True)
-
+# Charts Section
 st.markdown('<hr class="fancy-divider">', unsafe_allow_html=True)
+st.markdown('<div class="section-label">Visual Analysis</div>', unsafe_allow_html=True)
 
+plt.rcParams.update({"axes.grid": True, "grid.alpha": 0.2})
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+fig.patch.set_facecolor("#f4f7f5")
 
-# ──────────────────────────────────────────────────────────
-# SECTION 4 · CHARTS (original chart logic — restyled)
-# ──────────────────────────────────────────────────────────
-st.markdown('<div class="section-label">Charts</div>', unsafe_allow_html=True)
+# Frontier
+w_plot = np.linspace(-0.2, 1.2, 100)
+ax1.plot(portfolio_sd(w_plot, sd1, sd2, rho), portfolio_return(w_plot, r1, r2), color="#94a3b8", ls="--")
+ax1.scatter(vol_all, ret_all, color="#64748b", s=100, label="Unconstrained")
+ax1.scatter(vol_esg, ret_esg, color="#16a34a", s=100, label="ESG Optimal")
+ax1.set_title("Efficient Frontier")
+ax1.legend()
 
-plt.rcParams.update({
-    "font.family":       "sans-serif",
-    "axes.spines.top":   False,
-    "axes.spines.right": False,
-    "axes.grid":         True,
-    "grid.alpha":        0.25,
-    "grid.linestyle":    "--",
-})
+# Trade-off
+ax2.plot(esgs, sharpes, color="#ef4444")
+ax2.axvline(esg_threshold, color="#f59e0b", ls=":")
+ax2.set_title("Sharpe Ratio vs ESG Score")
 
-# Frontier data (wide range for display)
-w_plot  = np.linspace(-0.5, 1.5, 500)
-r_plot  = portfolio_return(w_plot, r1, r2)
-v_plot  = portfolio_sd(w_plot, sd1, sd2, rho)
+st.pyplot(fig)
 
-sd_max   = max(v_plot) * 1.05
-sd_range = np.linspace(0, sd_max, 300)
-cml_all  = r_free + ((ret_all - r_free) / vol_all) * sd_range
-cml_esg  = r_free + ((ret_esg - r_free) / vol_esg) * sd_range
-
-chart_col1, chart_col2 = st.columns(2)
-
-# Chart 1: Efficient Frontier & CML
-with chart_col1:
-    fig1, ax1 = plt.subplots(figsize=(6, 5))
-    fig1.patch.set_facecolor("#f7faf7")
-    ax1.set_facecolor("#f7faf7")
-
-    ax1.plot(v_plot, r_plot, color="#94a3b8", lw=1.5, alpha=0.5, label="Full frontier")
-    ax1.plot(sd_range, cml_all, "--", color="#94a3b8", lw=1.5, label="CML (unconstrained)")
-    ax1.plot(sd_range, cml_esg, "--", color="#16a34a", lw=1.5, label="CML (ESG)")
-    ax1.scatter(0,       r_free,  marker="s", s=80,  color="#0d1f0f",
-                zorder=5, label="Risk-free asset")
-    ax1.scatter(vol_all, ret_all, marker="*", s=220, color="#64748b",
-                edgecolors="white", linewidths=0.8, zorder=6, label="Optimal (unconstrained)")
-    ax1.scatter(vol_esg, ret_esg, marker="*", s=220, color="#16a34a",
-                edgecolors="white", linewidths=0.8, zorder=7, label="Optimal (ESG)")
-
-    ax1.annotate("Unconstrained", (vol_all, ret_all),
-                 xytext=(-6, -16), textcoords="offset points", fontsize=8, color="#64748b")
-    ax1.annotate("ESG optimal",   (vol_esg, ret_esg),
-                 xytext=(8, 6),   textcoords="offset points", fontsize=8, color="#16a34a")
-
-    ax1.set_xlim(0, max(v_plot) * 1.02)
-    ax1.xaxis.set_major_formatter(PercentFormatter(1.0))
-    ax1.yaxis.set_major_formatter(PercentFormatter(1.0))
-    ax1.set_xlabel("Risk (Standard Deviation)", fontsize=11)
-    ax1.set_ylabel("Expected Return",           fontsize=11)
-    ax1.set_title("Efficient Frontier & Capital Market Lines",
-                  fontsize=13, fontweight="bold", color="#0d1f0f")
-    ax1.legend(fontsize=7.5)
-    plt.tight_layout()
-    st.pyplot(fig1)
-    st.caption("Stars mark the tangency (highest Sharpe) portfolio for each case.")
-
-# Chart 2: ESG–Sharpe Trade-off
-with chart_col2:
-    fig2, ax2 = plt.subplots(figsize=(6, 5))
-    fig2.patch.set_facecolor("#f7faf7")
-    ax2.set_facecolor("#f7faf7")
-
-    ax2.plot(esgs, sharpes, color="#ef4444", lw=2.5, label="ESG–Sharpe frontier")
-    ax2.axvline(esg_threshold, color="#f59e0b", lw=1.5, linestyle=":",
-                label=f"ESG threshold ({esg_threshold:.1f})")
-    ax2.scatter(esg_all, sh_all, marker="*", s=220, color="#64748b",
-                edgecolors="white", linewidths=0.8, zorder=5, label="Optimal (unconstrained)")
-    ax2.scatter(esg_opt, sh_esg, marker="*", s=220, color="#16a34a",
-                edgecolors="white", linewidths=0.8, zorder=6, label="Optimal (ESG)")
-
-    ax2.annotate("Unconstrained", (esg_all, sh_all),
-                 xytext=(-6, -16), textcoords="offset points", fontsize=8, color="#64748b")
-    ax2.annotate("ESG optimal",   (esg_opt, sh_esg),
-                 xytext=(8, 6),   textcoords="offset points", fontsize=8, color="#16a34a")
-
-    ax2.set_xlabel("Portfolio ESG Score (0–100)", fontsize=11)
-    ax2.set_ylabel("Sharpe Ratio",                fontsize=11)
-    ax2.set_title("ESG–Sharpe Ratio Trade-off",
-                  fontsize=13, fontweight="bold", color="#0d1f0f")
-    ax2.legend(fontsize=7.5)
-    plt.tight_layout()
-    st.pyplot(fig2)
-    st.caption("Amber dotted line marks your minimum ESG threshold.")
-
-
-# ──────────────────────────────────────────────────────────
-# FOOTER
-# ──────────────────────────────────────────────────────────
-st.markdown("<br><br>", unsafe_allow_html=True)
-st.markdown("""
-<div style="text-align:center;font-size:12px;color:#94a3b8;padding:16px 0;">
-  EcoVest · Sustainable Finance Portfolio Tool ·
-  For illustrative purposes only — not financial advice.
-</div>
-""", unsafe_allow_html=True)
+st.markdown('<div style="text-align:center;font-size:12px;color:#94a3b8;padding:20px;">EcoVest · Not Financial Advice</div>', unsafe_allow_html=True)
