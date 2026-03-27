@@ -19,167 +19,226 @@ st.set_page_config(
 # ──────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
+/* ── Base ── */
 html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-    background-color: #f4f7f5;
-    color: ##eeeeee;
+    font-family: 'IBM Plex Sans', sans-serif;
+    background-color: #0d0d0d;
+    color: #d4d4d4;
 }
 
+/* ── Sidebar ── */
 [data-testid="stSidebar"] {
-    background: #0f2a1d;
-    border-right: 1px solid #1f3d2b;
+    background: #111111;
+    border-right: 1px solid #1e1e1e;
 }
-[data-testid="stSidebar"] * { color: #dbece0 !important; }
+[data-testid="stSidebar"] * {
+    color: #c8c8c8 !important;
+}
 [data-testid="stSidebar"] .stMarkdown h3 {
-    color: #6fcf97 !important;
-    font-size: 12px !important;
-    letter-spacing: 0.12em;
+    color: #4aba7a !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
+    border-bottom: 1px solid #1e1e1e;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
 }
 [data-testid="stSidebar"] input,
 [data-testid="stSidebar"] .stSelectbox > div > div {
-    background: #163825 !important;
-    border: 1px solid #2d5a3f !important;
-    border-radius: 8px !important;
+    background: #1a1a1a !important;
+    border: 1px solid #2a2a2a !important;
+    border-radius: 4px !important;
+    color: #d4d4d4 !important;
+    font-size: 13px !important;
 }
 [data-testid="stSidebar"] .stButton > button {
-    background: linear-gradient(135deg, #2f7d57, #4caf7a) !important;
-    border-radius: 10px !important;
+    background: #1f6b42 !important;
+    border: 1px solid #2a8a55 !important;
+    border-radius: 4px !important;
+    font-size: 12px !important;
     font-weight: 600 !important;
-    color: white !important;
+    letter-spacing: 0.06em;
+    color: #e8f5ee !important;
     width: 100%;
-    padding: 0.6rem;
-    border: none;
+    padding: 0.55rem;
+    transition: background 0.15s ease;
+}
+[data-testid="stSidebar"] .stButton > button:hover {
+    background: #256f46 !important;
 }
 
+/* ── Page header ── */
 .page-header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 42px;
-    color: #ffffff;
-    margin-bottom: 4px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    color: #f0f0f0;
+    letter-spacing: -0.01em;
+    margin-bottom: 2px;
 }
-.page-header p { color: #ffffff; margin-top: 0; }
+.page-header p {
+    font-size: 13px;
+    color: #888888;
+    margin-top: 0;
+    letter-spacing: 0.01em;
+}
 
+/* ── Section label ── */
 .section-label {
-    font-size: 11px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: #4aba7a;
+    text-transform: uppercase;
+    margin-top: 28px;
+    margin-bottom: 8px;
+    border-left: 2px solid #4aba7a;
+    padding-left: 8px;
+}
+
+/* ── Card ── */
+.card {
+    background: #161616;
+    border: 1px solid #252525;
+    border-radius: 4px;
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    color: #d4d4d4 !important;
+}
+.card * { color: inherit !important; }
+
+/* ── Metric tile ── */
+.metric-tile {
+    background: #141414;
+    border: 1px solid #222222;
+    border-top: 2px solid #1f6b42;
+    border-radius: 4px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+}
+.metric-tile .label {
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.14em;
-    color: #3f8f63;
     text-transform: uppercase;
-    margin-top: 30px;
-    margin-bottom: 10px;
+    color: #666666 !important;
+    margin-bottom: 6px;
+}
+.metric-tile .value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 26px;
+    font-weight: 500;
+    color: #f0f0f0 !important;
+    letter-spacing: -0.02em;
+}
+.metric-tile .sub {
+    font-size: 11px;
+    color: #555555 !important;
+    margin-top: 4px;
+    font-family: 'IBM Plex Mono', monospace;
 }
 
-.card {
-    background: #ffffff;
-    border: 1px solid #e2ece6;
-    border-radius: 16px;
-    padding: 22px;
-    box-shadow: 0 6px 18px rgba(16,40,28,0.04);
-    margin-bottom: 12px;
-    color: #1c2b22 !important; /* force readable text */
-}
-
-.metric-tile {
-    background: #ffffff;
-    border: 1px solid #e6efe9;
-    border-radius: 14px;
-    padding: 16px 20px;
-    margin-bottom: 10px;
-    color: #1c2b22 !important; /* fix white text */
-}
-.metric-tile .label { font-size: 11px; color: #6b8f7b !important; margin-bottom: 4px; }
-.metric-tile .value { font-size: 28px; font-weight: 600; color: #10281c !important; }
-.metric-tile .sub   { font-size: 11px; color: #9cb8a8 !important; margin-top: 2px; }
-
-.bar-row { margin-bottom: 4px; }
+/* ── Bar rows ── */
+.bar-row { margin-bottom: 6px; }
 .bar-label-row {
     display: flex;
     justify-content: space-between;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     margin-bottom: 4px;
-    color: #1c2b22 !important; /* bar labels readable */
+    color: #b0b0b0 !important;
+    font-family: 'IBM Plex Mono', monospace;
 }
 .bar-track {
-    height: 18px;
-    background: #edf4ef;
-    border-radius: 100px;
+    height: 6px;
+    background: #222222;
+    border-radius: 0;
     overflow: hidden;
 }
-.bar-fill { height: 18px; border-radius: 100px; }
-
-.cmp-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    font-size: 13px; 
-    color: #1c2b22 !important;  /* default text color */
+.bar-fill {
+    height: 6px;
+    border-radius: 0;
+    background: #2a8a55;
 }
 
+/* ── Comparison table ── */
+.cmp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #c8c8c8 !important;
+}
 .cmp-table th {
-    background: #10281c;       /* header background */
-    color: #b7d7c4 !important; /* header text color */
-    padding: 10px 14px;
+    background: #0d0d0d;
+    color: #4aba7a !important;
+    padding: 9px 14px;
     text-align: left;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-bottom: 1px solid #2a8a55;
 }
-
-.cmp-table td { 
-    padding: 9px 14px; 
-    border-bottom: 1px solid #f0f4f0; 
-    color: #1c2b22 !important;  /* make cell text dark so it's readable */
-    background: #ffffff;        /* default odd row background */
+.cmp-table td {
+    padding: 8px 14px;
+    border-bottom: 1px solid #1e1e1e;
+    color: #c8c8c8 !important;
+    background: #141414;
 }
-
-.cmp-table tr:nth-child(even) td { 
-    background: #f8faf9;        /* light even row background */
-    color: #1c2b22 !important;  /* ensure text is dark on light bg */
+.cmp-table tr:nth-child(even) td {
+    background: #111111;
+    color: #c8c8c8 !important;
 }
-
+.cmp-table tr:hover td {
+    background: #1a1a1a;
+}
 .cmp-table tr:last-child td { border-bottom: none; }
+
+/* ── Chips ── */
 .chip {
     display: inline-block;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-size: 14px;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-size: 11px;
     font-weight: 600;
-    color: #1c2b22 !important; /* make chip text readable */
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.04em;
 }
-.chip-pos { background: #e6f7ec; color: #1f7a4c; }
-.chip-neg { background: #fdeaea; color: #b42318; }
-.chip-neu { background: #eef2f1; color: #5f6f68; }
+.chip-pos { background: #0d2e1a; color: #4aba7a !important; border: 1px solid #1f6b42; }
+.chip-neg { background: #2e0d0d; color: #e06c6c !important; border: 1px solid #6b1f1f; }
+.chip-neu { background: #1e1e1e; color: #888888 !important; border: 1px solid #2e2e2e; }
 
+/* ── Divider ── */
 hr.fancy-divider {
     border: none;
-    height: 2px;
-    background: linear-gradient(90deg, #2f7d57, #7cc9a6, transparent);
-    margin: 28px 0;
+    height: 1px;
+    background: #1e1e1e;
+    margin: 24px 0;
 }
 
+/* ── Info / warn boxes ── */
 .info-box {
-    background: #edf7f1;
-    border-left: 4px solid #3f8f63;
-    padding: 14px 18px;
-    border-radius: 0 10px 10px 0;
-    color: #1c4a30 !important;
-    font-size: 14px;
+    background: #0d1f14;
+    border-left: 3px solid #2a8a55;
+    padding: 12px 16px;
+    border-radius: 0;
+    color: #a8d4b8 !important;
+    font-size: 13px;
     margin: 10px 0;
 }
 .warn-box {
-    background: #fff6e5;
-    border-left: 4px solid #e6a700;
-    padding: 14px 18px;
-    border-radius: 0 10px 10px 0;
-    color: #5a3e00 !important;
-    font-size: 14px;
+    background: #1f1800;
+    border-left: 3px solid #c8960a;
+    padding: 12px 16px;
+    border-radius: 0;
+    color: #d4b85a !important;
+    font-size: 13px;
     margin: 10px 0;
 }
-
-/* Ensure all text inside cards inherits readable color */
-.card * { color: inherit !important; }
-
 </style>
 """, unsafe_allow_html=True)
 # ──────────────────────────────────────────────────────────
