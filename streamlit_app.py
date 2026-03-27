@@ -297,7 +297,7 @@ sb = st.sidebar
 sb.markdown("""
 <div style="padding:18px 0 10px;text-align:center;">
   <span style="font-family:'Playfair Display',serif;font-size:26px;
-               color:#7ec984;letter-spacing:0.02em;">🌿 EcoVest</span><br>
+               color:#7ec984;letter-spacing:0.02em;">🌿 Ethos Invest</span><br>
   <span style="font-size:11px;color:#4a6b4e;letter-spacing:0.1em;
                text-transform:uppercase;">Sustainable Portfolio Tool</span>
 </div>
@@ -687,7 +687,7 @@ with chart_col2:
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("""
 <div style="text-align:center;font-size:12px;color:#94a3b8;padding:16px 0;">
-  EcoVest · Sustainable Finance Portfolio Tool ·
+  Ethos Invest · Sustainable Finance Portfolio Tool ·
   For illustrative purposes only — not financial advice.
 </div>
 """, unsafe_allow_html=True)
