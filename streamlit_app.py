@@ -18,31 +18,70 @@ st.set_page_config(
 # GLOBAL CSS
 # ──────────────────────────────────────────────────────────
 st.markdown("""
+st.markdown("""
 <style>
+/* Table container for subtle shadow and rounded corners */
+.cmp-table-wrapper {
+    overflow-x: auto;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-bottom: 20px;
+}
+
+/* Main table styling */
 .cmp-table {
     width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    background-color: #1f2a24; /* dark background for the whole table */
-    color: #ffffff; /* white text */
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    background-color: #1f2a24; /* dark table background */
+    color: #ffffff;
 }
 
-.cmp-table th, .cmp-table td {
-    padding: 10px 14px;
+/* Table headers */
+.cmp-table th {
+    background-color: #2b3a30; /* slightly lighter for header */
+    color: #ffffff;
+    padding: 12px 16px;
     text-align: left;
-    border-bottom: 1px solid #2c3e33; /* slightly lighter for separation */
-    color: #ffffff; /* ensures text is white */
-    background-color: #1f2a24; /* ensure even cells use dark background */
+    font-weight: 600;
+    letter-spacing: 0.03em;
 }
 
+/* Table rows */
+.cmp-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #2c3e33;
+    color: #e0e0e0; /* lighter text for readability */
+}
+
+/* Last row border removal */
 .cmp-table tr:last-child td {
     border-bottom: none;
 }
 
+/* Row hover effect */
+.cmp-table tr:hover td {
+    background-color: #2c3e33;
+    color: #ffffff;
+    transition: background-color 0.2s ease;
+}
+
+/* Optional: subtle alternating row shading (very slight) */
 .cmp-table tr:nth-child(even) td {
-    background-color: #1f2a24; /* override alternating colors */
+    background-color: #212f26;
+}
+
+/* Responsive font for smaller screens */
+@media (max-width: 600px) {
+    .cmp-table th, .cmp-table td {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
 }
 </style>
+""", unsafe_allow_html=True)
 """, unsafe_allow_html=True)
 
 
