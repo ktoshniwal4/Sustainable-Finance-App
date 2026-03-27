@@ -19,69 +19,67 @@ st.set_page_config(
 # ──────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-/* Table container for subtle shadow and rounded corners */
+/* ───────────────── TABLE WRAPPER ───────────────── */
 .cmp-table-wrapper {
     overflow-x: auto;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 18px rgba(16, 40, 28, 0.06);
     margin-bottom: 20px;
 }
 
-/* Main table styling */
+/* ───────────────── TABLE ───────────────── */
 .cmp-table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    background-color: #1f2a24; /* dark table background */
+    font-size: 13px;
+    background-color: #1f2a24; /* dark background */
     color: #ffffff;
 }
 
-/* Table headers */
+/* ───────────────── TABLE HEADERS ───────────────── */
 .cmp-table th {
-    background-color: #2b3a30; /* slightly lighter for header */
-    color: #ffffff;
+    background-color: #10281c; /* header slightly darker */
+    color: #b7d7c4;
     padding: 12px 16px;
     text-align: left;
     font-weight: 600;
     letter-spacing: 0.03em;
 }
 
-/* Table rows */
+/* ───────────────── TABLE CELLS ───────────────── */
 .cmp-table td {
     padding: 12px 16px;
     border-bottom: 1px solid #2c3e33;
-    color: #e0e0e0; /* lighter text for readability */
+    color: #e0e0e0; /* slightly lighter text */
 }
 
-/* Last row border removal */
+/* ───────────────── LAST ROW ───────────────── */
 .cmp-table tr:last-child td {
     border-bottom: none;
 }
 
-/* Row hover effect */
+/* ───────────────── HOVER EFFECT ───────────────── */
 .cmp-table tr:hover td {
     background-color: #2c3e33;
-    color: #ffffff;
     transition: background-color 0.2s ease;
 }
 
-/* Optional: subtle alternating row shading */
+/* ───────────────── ALTERNATE ROW COLORS ───────────────── */
 .cmp-table tr:nth-child(even) td {
     background-color: #212f26;
 }
 
-/* Responsive font for smaller screens */
+/* ───────────────── RESPONSIVE FONT ───────────────── */
 @media (max-width: 600px) {
     .cmp-table th, .cmp-table td {
         padding: 10px 12px;
-        font-size: 13px;
+        font-size: 12px;
     }
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 # ──────────────────────────────────────────────────────────
 # CORE LOGIC (from original top code — unchanged)
