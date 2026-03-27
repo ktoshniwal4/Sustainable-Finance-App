@@ -111,7 +111,7 @@ html, body, [class*="css"] {
 }
 .bar-fill { height: 18px; border-radius: 100px; }
 
-.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #1c2b22 !important; }
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #eef2f0 !important; }
 .cmp-table th {
     background: #10281c;
     color: #b7d7c4 !important;
