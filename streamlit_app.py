@@ -24,7 +24,7 @@ st.markdown("""
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
     background-color: #f4f7f5;
-    color: #1c2b22;
+    color: #dbece0;
 }
 
 [data-testid="stSidebar"] {
