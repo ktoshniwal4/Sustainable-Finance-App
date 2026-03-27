@@ -498,7 +498,7 @@ run = sb.button("Calculate Portfolio ›", key="run")
 # ──────────────────────────────────────────────────────────
 st.markdown("""
 <div class="page-header">
-  <h1>🌱 Ethos Invest<br>Portfolio Tool</h1>
+  <h1>🌱 Ethos Invest Portfolio Analysis Tool</h1>
   <p>Compare investments based on financial performance, risk, and ESG alignment.</p>
 </div>
 """, unsafe_allow_html=True)
