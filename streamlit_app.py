@@ -119,7 +119,7 @@ html, body, [class*="css"] {
     text-align: left;
     font-weight: 500;
 }
-.cmp-table td { padding: 9px 14px; border-bottom: 1px solid #0f2a1d; color: #0f2a1d !important; }
+.cmp-table td { padding: 9px 14px; border-bottom: 1px solid #f8faf9; color: #f8faf9 !important; }
 .cmp-table tr:last-child td { border-bottom: none; }
 .cmp-table tr:nth-child(even) td { background: #f8faf9; }
 
