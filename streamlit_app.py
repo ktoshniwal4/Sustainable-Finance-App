@@ -108,17 +108,37 @@ html, body, [class*="css"] {
 }
 .bar-fill { height: 18px; border-radius: 100px; }
 
-.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cmp-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    font-size: 13px; 
+    background: #0b1a12;
+}
+
 .cmp-table th {
-    background: #10281c;
+    background: linear-gradient(90deg, #0f2a1d, #123524);
     color: #b7d7c4;
     padding: 10px 14px;
     text-align: left;
     font-weight: 500;
+    border-bottom: 1px solid #1f3d2b;
 }
-.cmp-table td { padding: 9px 14px; border-bottom: 1px solid #eef2f0; }
-.cmp-table tr:last-child td { border-bottom: none; }
-.cmp-table tr:nth-child(even) td { background: #f8faf9; }
+
+.cmp-table td { 
+    padding: 10px 14px; 
+    border-bottom: 1px solid #13271c;
+    color: #dbece0;
+}
+
+/* REMOVE alternating white rows */
+.cmp-table tr:nth-child(even) td { 
+    background: transparent; 
+}
+
+/* subtle hover instead */
+.cmp-table tr:hover td {
+    background: rgba(111, 207, 151, 0.06);
+}
 
 .chip {
     display: inline-block;
@@ -457,31 +477,33 @@ d_ret = ret_esg - ret_all
 d_sd  = vol_esg - vol_all
 d_esg = esg_opt - esg_all
 
-
 # ──────────────────────────────────────────────────────────
-# SECTION 1 · ESG OPTIMAL PORTFOLIO
+# SECTION 1 · ESG OPTIMAL PORTFOLIO (FIXED)
 # ──────────────────────────────────────────────────────────
 st.markdown('<div class="section-label">ESG Optimal Portfolio</div>', unsafe_allow_html=True)
 
 col_alloc, col_ring, col_metrics = st.columns([2.4, 1.2, 2.4])
 
 with col_alloc:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown("**Asset Allocation**")
-    st.markdown(alloc_bar_html(w1_esg, 1 - w1_esg, asset1_name, asset2_name),
-                unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    with st.container():
+        st.markdown(f"""
+        <div class="card">
+            <div style="font-weight:600;margin-bottom:12px;">Asset Allocation</div>
+            {alloc_bar_html(w1_esg, 1 - w1_esg, asset1_name, asset2_name)}
+        </div>
+        """, unsafe_allow_html=True)
 
 with col_ring:
-    st.markdown(progress_ring_html(esg_opt, "Portfolio ESG"), unsafe_allow_html=True)
+    with st.container():
+        st.markdown(progress_ring_html(esg_opt, "Portfolio ESG"), unsafe_allow_html=True)
 
 with col_metrics:
-    st.markdown(metric_tile("Expected Return",  f"{ret_esg*100:.2f}%", "Annualised"),
-                unsafe_allow_html=True)
-    st.markdown(metric_tile("Risk (Std Dev)",   f"{vol_esg*100:.2f}%", "Annualised"),
-                unsafe_allow_html=True)
-    st.markdown(metric_tile("Sharpe Ratio",     f"{sh_esg:.4f}",       "Risk-adjusted return"),
-                unsafe_allow_html=True)
+    with st.container():
+        st.markdown(metric_tile("Expected Return",  f"{ret_esg*100:.2f}%", "Annualised"), unsafe_allow_html=True)
+        st.markdown(metric_tile("Risk (Std Dev)",   f"{vol_esg*100:.2f}%", "Annualised"), unsafe_allow_html=True)
+        st.markdown(metric_tile("Sharpe Ratio",     f"{sh_esg:.4f}",       "Risk-adjusted return"), unsafe_allow_html=True)
+
+st.markdown("<div style='height:10px;'></div>", unsafe_allow_html=True)
 
 st.markdown('<hr class="fancy-divider">', unsafe_allow_html=True)
 
