@@ -17,33 +17,148 @@ st.set_page_config(
 # ──────────────────────────────────────────────────────────
 # GLOBAL CSS
 # ──────────────────────────────────────────────────────────
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f7f5;
+    color: #1c2b22;
+}
+
+[data-testid="stSidebar"] {
+    background: #0f2a1d;
+    border-right: 1px solid #1f3d2b;
+}
+[data-testid="stSidebar"] * { color: #dbece0 !important; }
+[data-testid="stSidebar"] .stMarkdown h3 {
+    color: #6fcf97 !important;
+    font-size: 12px !important;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+[data-testid="stSidebar"] input,
+[data-testid="stSidebar"] .stSelectbox > div > div {
+    background: #163825 !important;
+    border: 1px solid #2d5a3f !important;
+    border-radius: 8px !important;
+}
+[data-testid="stSidebar"] .stButton > button {
+    background: linear-gradient(135deg, #2f7d57, #4caf7a) !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    color: white !important;
+    width: 100%;
+    padding: 0.6rem;
+    border: none;
+}
+
+.page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    color: #10281c;
+    margin-bottom: 4px;
+}
+.page-header p { color: #5f7d6c; margin-top: 0; }
+
+.section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: #3f8f63;
+    text-transform: uppercase;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #e2ece6;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 6px 18px rgba(16,40,28,0.04);
+    margin-bottom: 12px;
+}
+
+.metric-tile {
+    background: #ffffff;
+    border: 1px solid #e6efe9;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+}
+.metric-tile .label { font-size: 11px; color: #6b8f7b; margin-bottom: 4px; }
+.metric-tile .value { font-size: 28px; font-weight: 600; color: #10281c; }
+.metric-tile .sub   { font-size: 11px; color: #9cb8a8; margin-top: 2px; }
+
+.bar-row { margin-bottom: 4px; }
+.bar-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+.bar-track {
+    height: 18px;
+    background: #edf4ef;
+    border-radius: 100px;
+    overflow: hidden;
+}
+.bar-fill { height: 18px; border-radius: 100px; }
+
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cmp-table th {
+    background: #10281c;
+    color: #b7d7c4;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 500;
+}
+.cmp-table td { padding: 9px 14px; border-bottom: 1px solid #eef2f0; }
+.cmp-table tr:last-child td { border-bottom: none; }
+.cmp-table tr:nth-child(even) td { background: #f8faf9; }
+
 .chip {
     display: inline-block;
-    padding: 6px 14px;
+    padding: 4px 12px;
     border-radius: 999px;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    color: #10281c !important;   /* FORCE visible text */
+    font-size: 14px;
+    font-weight: 600;
+}
+.chip-pos { background: #e6f7ec; color: #1f7a4c; }
+.chip-neg { background: #fdeaea; color: #b42318; }
+.chip-neu { background: #eef2f1; color: #5f6f68; }
+
+hr.fancy-divider {
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, #2f7d57, #7cc9a6, transparent);
+    margin: 28px 0;
 }
 
-/* positive = green */
-.chip-pos { 
-    background: rgba(34,197,94,0.12);
-    color: #22c55e !important;
+.info-box {
+    background: #edf7f1;
+    border-left: 4px solid #3f8f63;
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    color: #1c4a30;
+    font-size: 14px;
+    margin: 10px 0;
 }
+.warn-box {
+    background: #fff6e5;
+    border-left: 4px solid #e6a700;
+    padding: 14px 18px;
+    border-radius: 0 10px 10px 0;
+    color: #5a3e00;
+    font-size: 14px;
+    margin: 10px 0;
+}
+</style>
+""", unsafe_allow_html=True)
 
-/* negative = red */
-.chip-neg { 
-    background: rgba(239,68,68,0.12);
-    color: #ef4444 !important;
-}
-
-/* neutral = grey */
-.chip-neu { 
-    background: rgba(148,163,184,0.12);
-    color: #94a3b8 !important;
-}
 
 # ──────────────────────────────────────────────────────────
 # CORE LOGIC (from original top code — unchanged)
