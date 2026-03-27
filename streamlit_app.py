@@ -111,18 +111,34 @@ html, body, [class*="css"] {
 }
 .bar-fill { height: 18px; border-radius: 100px; }
 
-.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #1c2b22 !important; }
+.cmp-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    font-size: 13px; 
+    color: #1c2b22 !important;  /* default text color */
+}
+
 .cmp-table th {
-    background: #10281c;
-    color: #b7d7c4 !important;
+    background: #10281c;       /* header background */
+    color: #b7d7c4 !important; /* header text color */
     padding: 10px 14px;
     text-align: left;
     font-weight: 500;
 }
-.cmp-table td { padding: 9px 14px; border-bottom: 1px solid #f8faf9; color: #f8faf9 !important; }
-.cmp-table tr:last-child td { border-bottom: none; }
-.cmp-table tr:nth-child(even) td { background: #f8faf9; }
 
+.cmp-table td { 
+    padding: 9px 14px; 
+    border-bottom: 1px solid #f0f4f0; 
+    color: #1c2b22 !important;  /* make cell text dark so it's readable */
+    background: #ffffff;        /* default odd row background */
+}
+
+.cmp-table tr:nth-child(even) td { 
+    background: #f8faf9;        /* light even row background */
+    color: #1c2b22 !important;  /* ensure text is dark on light bg */
+}
+
+.cmp-table tr:last-child td { border-bottom: none; }
 .chip {
     display: inline-block;
     padding: 4px 12px;
