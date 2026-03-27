@@ -79,6 +79,7 @@ html, body, [class*="css"] {
     padding: 22px;
     box-shadow: 0 6px 18px rgba(16,40,28,0.04);
     margin-bottom: 12px;
+    color: #1c2b22 !important; /* force readable text */
 }
 
 .metric-tile {
@@ -87,10 +88,11 @@ html, body, [class*="css"] {
     border-radius: 14px;
     padding: 16px 20px;
     margin-bottom: 10px;
+    color: #1c2b22 !important; /* fix white text */
 }
-.metric-tile .label { font-size: 11px; color: #6b8f7b; margin-bottom: 4px; }
-.metric-tile .value { font-size: 28px; font-weight: 600; color: #10281c; }
-.metric-tile .sub   { font-size: 11px; color: #9cb8a8; margin-top: 2px; }
+.metric-tile .label { font-size: 11px; color: #6b8f7b !important; margin-bottom: 4px; }
+.metric-tile .value { font-size: 28px; font-weight: 600; color: #10281c !important; }
+.metric-tile .sub   { font-size: 11px; color: #9cb8a8 !important; margin-top: 2px; }
 
 .bar-row { margin-bottom: 4px; }
 .bar-label-row {
@@ -99,6 +101,7 @@ html, body, [class*="css"] {
     font-size: 13px;
     font-weight: 500;
     margin-bottom: 4px;
+    color: #1c2b22 !important; /* bar labels readable */
 }
 .bar-track {
     height: 18px;
@@ -108,15 +111,15 @@ html, body, [class*="css"] {
 }
 .bar-fill { height: 18px; border-radius: 100px; }
 
-.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; color: #1c2b22 !important; }
 .cmp-table th {
     background: #10281c;
-    color: #b7d7c4;
+    color: #b7d7c4 !important;
     padding: 10px 14px;
     text-align: left;
     font-weight: 500;
 }
-.cmp-table td { padding: 9px 14px; border-bottom: 1px solid #eef2f0; }
+.cmp-table td { padding: 9px 14px; border-bottom: 1px solid #eef2f0; color: #1c2b22 !important; }
 .cmp-table tr:last-child td { border-bottom: none; }
 .cmp-table tr:nth-child(even) td { background: #f8faf9; }
 
@@ -126,6 +129,7 @@ html, body, [class*="css"] {
     border-radius: 999px;
     font-size: 14px;
     font-weight: 600;
+    color: #1c2b22 !important; /* make chip text readable */
 }
 .chip-pos { background: #e6f7ec; color: #1f7a4c; }
 .chip-neg { background: #fdeaea; color: #b42318; }
@@ -143,7 +147,7 @@ hr.fancy-divider {
     border-left: 4px solid #3f8f63;
     padding: 14px 18px;
     border-radius: 0 10px 10px 0;
-    color: #1c4a30;
+    color: #1c4a30 !important;
     font-size: 14px;
     margin: 10px 0;
 }
@@ -152,38 +156,16 @@ hr.fancy-divider {
     border-left: 4px solid #e6a700;
     padding: 14px 18px;
     border-radius: 0 10px 10px 0;
-    color: #5a3e00;
+    color: #5a3e00 !important;
     font-size: 14px;
     margin: 10px 0;
 }
+
+/* Ensure all text inside cards inherits readable color */
+.card * { color: inherit !important; }
+
 </style>
 """, unsafe_allow_html=True)
-
-/* Force readable text inside cards and metric tiles */
-.card, .metric-tile, .bar-row, .cmp-table, .chip {
-    color: #1c2b22 !important;  /* dark greenish for readability */
-}
-
-/* Ensure bar labels are visible */
-.bar-label-row span {
-    color: #1c2b22 !important;
-}
-
-/* Table text */
-.cmp-table th, .cmp-table td {
-    color: #1c2b22 !important;
-}
-
-/* Chips readable */
-.chip {
-    color: #1c2b22 !important;
-}
-
-/* Override any white text accidentally applied */
-.card * {
-    color: inherit !important;
-}
-
 # ──────────────────────────────────────────────────────────
 # CORE LOGIC (from original top code — unchanged)
 # ──────────────────────────────────────────────────────────
