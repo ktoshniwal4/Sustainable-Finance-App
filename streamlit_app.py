@@ -159,6 +159,30 @@ hr.fancy-divider {
 </style>
 """, unsafe_allow_html=True)
 
+/* Force readable text inside cards and metric tiles */
+.card, .metric-tile, .bar-row, .cmp-table, .chip {
+    color: #1c2b22 !important;  /* dark greenish for readability */
+}
+
+/* Ensure bar labels are visible */
+.bar-label-row span {
+    color: #1c2b22 !important;
+}
+
+/* Table text */
+.cmp-table th, .cmp-table td {
+    color: #1c2b22 !important;
+}
+
+/* Chips readable */
+.chip {
+    color: #1c2b22 !important;
+}
+
+/* Override any white text accidentally applied */
+.card * {
+    color: inherit !important;
+}
 
 # ──────────────────────────────────────────────────────────
 # CORE LOGIC (from original top code — unchanged)
