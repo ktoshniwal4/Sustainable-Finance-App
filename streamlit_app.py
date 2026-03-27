@@ -121,7 +121,9 @@ html, body, [class*="css"] {
 }
 .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #eef2f0; color: #1c2b22 !important; }
 .cmp-table tr:last-child td { border-bottom: none; }
-.cmp-table tr:nth-child(even) td { background: #f8faf9; }
+.cmp-table tr:nth-child(even) td {
+    background: transparent;
+}
 
 .chip {
     display: inline-block;
