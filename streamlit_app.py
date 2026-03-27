@@ -108,17 +108,41 @@ html, body, [class*="css"] {
 }
 .bar-fill { height: 18px; border-radius: 100px; }
 
-.cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.cmp-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    font-size: 13px; 
+    background: #0b1a12;
+}
+
 .cmp-table th {
-    background: #10281c;
+    background: linear-gradient(90deg, #0f2a1d, #123524);
     color: #b7d7c4;
     padding: 10px 14px;
     text-align: left;
     font-weight: 500;
+    border-bottom: 1px solid #1f3d2b;
 }
-.cmp-table td { padding: 9px 14px; border-bottom: 1px solid #eef2f0; }
-.cmp-table tr:last-child td { border-bottom: none; }
-.cmp-table tr:nth-child(even) td { background: #f8faf9; }
+
+.cmp-table td { 
+    padding: 10px 14px; 
+    border-bottom: 1px solid #13271c;
+    color: #dbece0;
+}
+
+.cmp-table tr:last-child td { 
+    border-bottom: none; 
+}
+
+/* removes white stripes */
+.cmp-table tr:nth-child(even) td { 
+    background: transparent; 
+}
+
+/* subtle hover effect */
+.cmp-table tr:hover td {
+    background: rgba(111, 207, 151, 0.06);
+}
 
 .chip {
     display: inline-block;
