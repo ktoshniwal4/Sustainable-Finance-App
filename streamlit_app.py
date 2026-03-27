@@ -8,7 +8,7 @@ from matplotlib.ticker import PercentFormatter
 # PAGE CONFIG
 # ──────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Ethos Invest · Sustainable Portfolio",
+    page_title="Ethos Invest · Sustainable Portfolio Tool",
     page_icon="🌿",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -20,7 +20,7 @@ st.set_page_config(
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=JetBrains+Mono:wght@400;500&display=swap');
- 
+
 /* ── Base ── */
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
