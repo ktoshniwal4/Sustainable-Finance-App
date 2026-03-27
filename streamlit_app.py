@@ -118,8 +118,13 @@ html, body, [class*="css"] {
 }
 .cmp-table td { padding: 9px 14px; border-bottom: 1px solid #eef2f0; }
 .cmp-table tr:last-child td { border-bottom: none; }
-.cmp-table tr:nth-child(even) td { background: #f8faf9; }
-
+.cmp-table tr:nth-child(even) td {
+    background: #e6f0e8;  /* slightly darker light green/grey for contrast */
+    color: #111827;        /* dark text for readability */
+}
+.cmp-table td {
+    color: #111827;        /* ensure all table cells use dark text */
+}
 .chip {
     display: inline-block;
     padding: 4px 12px;
