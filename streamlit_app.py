@@ -23,30 +23,29 @@ st.markdown("""
 
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
-    background-color: #f9faf8;
-    color: #111827;  /* darker main text for readability */
+    background-color: #f4f7f5;
+    color: #1c2b22;
 }
 
 [data-testid="stSidebar"] {
-    background: #1f3529;  /* darker sidebar for contrast */
-    border-right: 1px solid #2e4d3b;
+    background: #0f2a1d;
+    border-right: 1px solid #1f3d2b;
 }
-[data-testid="stSidebar"] * { color: #e6f1e8 !important; }
+[data-testid="stSidebar"] * { color: #dbece0 !important; }
 [data-testid="stSidebar"] .stMarkdown h3 {
-    color: #9ae6b4 !important;
+    color: #6fcf97 !important;
     font-size: 12px !important;
     letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 [data-testid="stSidebar"] input,
 [data-testid="stSidebar"] .stSelectbox > div > div {
-    background: #26432c !important;
-    border: 1px solid #3a6d4a !important;
+    background: #163825 !important;
+    border: 1px solid #2d5a3f !important;
     border-radius: 8px !important;
-    color: #f1fdf7 !important;
 }
 [data-testid="stSidebar"] .stButton > button {
-    background: linear-gradient(135deg, #38a169, #68d391) !important;
+    background: linear-gradient(135deg, #2f7d57, #4caf7a) !important;
     border-radius: 10px !important;
     font-weight: 600 !important;
     color: white !important;
@@ -58,16 +57,16 @@ html, body, [class*="css"] {
 .page-header h1 {
     font-family: 'Playfair Display', serif;
     font-size: 42px;
-    color: #0f2a1c;
+    color: #10281c;
     margin-bottom: 4px;
 }
-.page-header p { color: #3e4f3f; margin-top: 0; }
+.page-header p { color: #5f7d6c; margin-top: 0; }
 
 .section-label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.14em;
-    color: #2f7d57;
+    color: #3f8f63;
     text-transform: uppercase;
     margin-top: 30px;
     margin-bottom: 10px;
@@ -75,24 +74,23 @@ html, body, [class*="css"] {
 
 .card {
     background: #ffffff;
-    border: 1px solid #d1e3d0;
+    border: 1px solid #e2ece6;
     border-radius: 16px;
     padding: 22px;
-    box-shadow: 0 6px 18px rgba(16,40,28,0.06);
+    box-shadow: 0 6px 18px rgba(16,40,28,0.04);
     margin-bottom: 12px;
-    color: #111827;  /* ensure text is dark */
 }
 
 .metric-tile {
     background: #ffffff;
-    border: 1px solid #cde3d3;
+    border: 1px solid #e6efe9;
     border-radius: 14px;
     padding: 16px 20px;
     margin-bottom: 10px;
 }
-.metric-tile .label { font-size: 11px; color: #4b6b56; margin-bottom: 4px; }
-.metric-tile .value { font-size: 28px; font-weight: 600; color: #111827; }
-.metric-tile .sub   { font-size: 11px; color: #6b8f7b; margin-top: 2px; }
+.metric-tile .label { font-size: 11px; color: #6b8f7b; margin-bottom: 4px; }
+.metric-tile .value { font-size: 28px; font-weight: 600; color: #10281c; }
+.metric-tile .sub   { font-size: 11px; color: #9cb8a8; margin-top: 2px; }
 
 .bar-row { margin-bottom: 4px; }
 .bar-label-row {
@@ -104,7 +102,7 @@ html, body, [class*="css"] {
 }
 .bar-track {
     height: 18px;
-    background: #e5f0e6;
+    background: #edf4ef;
     border-radius: 100px;
     overflow: hidden;
 }
@@ -112,15 +110,15 @@ html, body, [class*="css"] {
 
 .cmp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .cmp-table th {
-    background: #1e3a28;
-    color: #c0f0c1;
+    background: #10281c;
+    color: #b7d7c4;
     padding: 10px 14px;
     text-align: left;
     font-weight: 500;
 }
-.cmp-table td { padding: 9px 14px; border-bottom: 1px solid #d9e8da; color: #111827; }
+.cmp-table td { padding: 9px 14px; border-bottom: 1px solid #eef2f0; }
 .cmp-table tr:last-child td { border-bottom: none; }
-.cmp-table tr:nth-child(even) td { background: #f1f6f2; }
+.cmp-table tr:nth-child(even) td { background: #f8faf9; }
 
 .chip {
     display: inline-block;
@@ -129,32 +127,32 @@ html, body, [class*="css"] {
     font-size: 14px;
     font-weight: 600;
 }
-.chip-pos { background: #d1f5dc; color: #065f26; }
-.chip-neg { background: #ffe0e0; color: #991b1b; }
-.chip-neu { background: #f0f4f2; color: #4b5563; }
+.chip-pos { background: #e6f7ec; color: #1f7a4c; }
+.chip-neg { background: #fdeaea; color: #b42318; }
+.chip-neu { background: #eef2f1; color: #5f6f68; }
 
 hr.fancy-divider {
     border: none;
     height: 2px;
-    background: linear-gradient(90deg, #38a169, #9ae6b4, transparent);
+    background: linear-gradient(90deg, #2f7d57, #7cc9a6, transparent);
     margin: 28px 0;
 }
 
 .info-box {
-    background: #e6f5ea;
-    border-left: 4px solid #2f7d57;
+    background: #edf7f1;
+    border-left: 4px solid #3f8f63;
     padding: 14px 18px;
     border-radius: 0 10px 10px 0;
-    color: #0f2a1c;
+    color: #1c4a30;
     font-size: 14px;
     margin: 10px 0;
 }
 .warn-box {
-    background: #fff8e1;
-    border-left: 4px solid #d97706;
+    background: #fff6e5;
+    border-left: 4px solid #e6a700;
     padding: 14px 18px;
     border-radius: 0 10px 10px 0;
-    color: #78350f;
+    color: #5a3e00;
     font-size: 14px;
     margin: 10px 0;
 }
@@ -671,4 +669,3 @@ st.markdown("""
   For illustrative purposes only — not financial advice.
 </div>
 """, unsafe_allow_html=True)
-
