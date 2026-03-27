@@ -142,14 +142,31 @@ html, body, [class*="css"] {
 
 .chip {
     display: inline-block;
-    padding: 4px 12px;
+    padding: 6px 14px;
     border-radius: 999px;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #10281c !important;   /* FORCE visible text */
 }
-.chip-pos { background: #e6f7ec; color: #1f7a4c; }
-.chip-neg { background: #fdeaea; color: #b42318; }
-.chip-neu { background: #eef2f1; color: #5f6f68; }
+
+/* positive = green */
+.chip-pos { 
+    background: rgba(34,197,94,0.12);
+    color: #22c55e !important;
+}
+
+/* negative = red */
+.chip-neg { 
+    background: rgba(239,68,68,0.12);
+    color: #ef4444 !important;
+}
+
+/* neutral = grey */
+.chip-neu { 
+    background: rgba(148,163,184,0.12);
+    color: #94a3b8 !important;
+}
 
 hr.fancy-divider {
     border: none;
