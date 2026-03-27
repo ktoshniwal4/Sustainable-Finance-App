@@ -19,19 +19,13 @@ st.set_page_config(
 # ──────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=JetBrains+Mono:wght@400;500&display=swap');
+ 
+/* ── Base ── */
 html, body, [class*="css"] {
-    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     background-color: #0e1014;
     color: #c9cdd6;
-}
-
-.metric-tile .value,
-.bar-label-row,
-.cmp-table,
-.chip {
-    font-family: 'Fira Code', monospace;
 }
 
 /* ── Sidebar ── */
