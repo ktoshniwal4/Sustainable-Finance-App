@@ -822,31 +822,79 @@ else:
         glabel=st.session_state.get("gamma_label","Moderate")
         plabel=st.session_state.get("pref_label","Balanced investor")
 
-        # Calculations
-        esg_thresh=min(esg1,esg2)+lam*(max(esg1,esg2)-min(esg1,esg2))
-        wts=np.linspace(0,1,1000)
-        rets=portfolio_return(wts,r1,r2); vols=portfolio_sd(wts,sd1,sd2,rho)
-        esgs=portfolio_esg(wts,esg1,esg2)
-        sharpes=np.where(vols>0,(rets-r_free)/vols,-np.inf)
-        idx_all=int(np.argmax(sharpes)); elig=np.where(esgs>=esg_thresh)[0]
+        # ── CALCULATIONS (utility-function based — audit compliant) ───────────
+        # ESG scores normalised to 0-1 for utility function
+        # (keeps units comparable with returns which are also small decimals)
+        esg1_n = esg1 / 100.0
+        esg2_n = esg2 / 100.0
 
-        if len(elig)==0:
-            st.markdown('<div class="warn-box">No portfolios satisfy your ESG threshold. Go back and reduce your ESG preference (λ).</div>',unsafe_allow_html=True)
-            st.markdown('<div class="btn-back">',unsafe_allow_html=True)
-            st.button("← Back",on_click=go_back,key="bck5e"); st.markdown('</div>',unsafe_allow_html=True)
-            st.stop()
+        wts  = np.linspace(0, 1, 2000)
+        rets = portfolio_return(wts, r1, r2)
+        vols = portfolio_sd(wts, sd1, sd2, rho)
+        esgs = portfolio_esg(wts, esg1,   esg2  )   # 0-100 scale, for display
+        esgs_n = portfolio_esg(wts, esg1_n, esg2_n) # 0-1 scale, for utility
 
-        idx_esg=elig[int(np.argmax(sharpes[elig]))]
-        w1_all=wts[idx_all]; w1_esg=wts[idx_esg]
-        ret_all=rets[idx_all]; ret_esg=rets[idx_esg]
-        vol_all=vols[idx_all]; vol_esg=vols[idx_esg]
-        esg_all=esgs[idx_all]; esg_opt=esgs[idx_esg]
-        sh_all=float(sharpes[idx_all]); sh_esg=float(sharpes[idx_esg])
-        denom=sd1**2+sd2**2-2*rho*sd1*sd2
-        w1_mv=float(np.clip((sd2**2-rho*sd1*sd2)/denom if denom!=0 else 0.5,0,1))
-        ret_mv=portfolio_return(w1_mv,r1,r2); vol_mv=portfolio_sd(w1_mv,sd1,sd2,rho)
-        esg_mv=portfolio_esg(w1_mv,esg1,esg2); sh_mv=(ret_mv-r_free)/vol_mv if vol_mv>0 else 0.
-        d_ret=ret_esg-ret_all; d_sd=vol_esg-vol_all; d_esg=esg_opt-esg_all
+        # Sharpe ratios — displayed only, not used for optimisation
+        sharpes = np.where(vols > 0, (rets - r_free) / vols, -np.inf)
+
+        # ── Utility functions ────────────────────────────────────────────────
+        # U_esg(w)  = r_p − γ·σ_p² + λ·ESG_p   (ESG-adjusted preference)
+        # U_trad(w) = r_p − γ·σ_p²              (pure mean-variance, λ=0)
+        # Convention matches the tutorial: coefficient γ (not γ/2) on variance
+        util_esg  = rets - gamma * vols**2 + lam * esgs_n
+        util_trad = rets - gamma * vols**2
+
+        # ── Optimal portfolios ───────────────────────────────────────────────
+        idx_esg  = int(np.argmax(util_esg))   # maximise ESG-adjusted utility
+        idx_all  = int(np.argmax(util_trad))  # maximise traditional MV utility
+
+        # Minimum variance (closed-form for two assets, clamped to [0,1])
+        denom = sd1**2 + sd2**2 - 2*rho*sd1*sd2
+        w1_mv = float(np.clip(
+            (sd2**2 - rho*sd1*sd2) / denom if denom != 0 else 0.5, 0, 1))
+
+        # ── Unpack results ───────────────────────────────────────────────────
+        w1_esg  = wts[idx_esg];  w1_all  = wts[idx_all]
+        ret_esg = rets[idx_esg]; ret_all = rets[idx_all]
+        vol_esg = vols[idx_esg]; vol_all = vols[idx_all]
+        esg_opt = esgs[idx_esg]; esg_all = esgs[idx_all]
+        sh_esg  = float(sharpes[idx_esg]); sh_all = float(sharpes[idx_all])
+
+        ret_mv = portfolio_return(w1_mv, r1, r2)
+        vol_mv = portfolio_sd(w1_mv, sd1, sd2, rho)
+        esg_mv = portfolio_esg(w1_mv, esg1, esg2)
+        sh_mv  = (ret_mv - r_free) / vol_mv if vol_mv > 0 else 0.0
+
+        d_ret = ret_esg - ret_all
+        d_sd  = vol_esg - vol_all
+        d_esg = esg_opt - esg_all
+
+        # ── Corner solution detection ────────────────────────────────────────
+        # A corner solution (w=0 or w=1) is economically valid: it means the
+        # ESG preference is strong enough that no interior diversification
+        # improves the objective.  Report it honestly.
+        is_corner_esg  = (idx_esg  == 0 or idx_esg  == len(wts)-1)
+        is_corner_trad = (idx_all  == 0 or idx_all  == len(wts)-1)
+        corner_msg     = ""
+        if is_corner_esg:
+            corner_asset = f"{n1}" if idx_esg == len(wts)-1 else f"{n2}"
+            corner_msg   = (f"Your ESG preference is strong enough that the optimal "
+                            f"portfolio holds 100% in <strong>{corner_asset}</strong> "
+                            f"(a corner solution). The non-negativity constraint is "
+                            f"binding on the other asset. This is economically correct: "
+                            f"at λ = {lam:.2f}, diversification does not improve the objective.")
+
+        # ESG threshold for chart display only (amber vertical line on ESG-Sharpe chart)
+        esg_thresh = min(esg1,esg2) + lam*(max(esg1,esg2)-min(esg1,esg2))
+
+        # ── Corner solution notice (shown when binding constraint) ──────────
+        if corner_msg:
+            st.markdown(f'<div class="warn-box">⚠️ Corner solution: {corner_msg}</div>',
+                        unsafe_allow_html=True)
+        if is_corner_trad:
+            st.markdown(
+                f'<div class="info-box">Note: the traditional MV portfolio (λ=0) is also at a corner — one asset dominates on pure risk-return terms at γ = {gamma:.1f}.</div>',
+                unsafe_allow_html=True)
 
         # ── LAYER 1: HERO RESULT ──────────────────────────
         st.markdown('<div class="stage-card">',unsafe_allow_html=True)
@@ -866,6 +914,12 @@ else:
               <div class="mini-card-title">Asset Allocation</div>
               {alloc_bar_html(w1_esg,1-w1_esg,n1,n2)}
             </div>""",unsafe_allow_html=True)
+            if w1_esg >= 0.999:
+                corner_html = f'<div class="warn-box" style="margin-top:10px;"><strong>Corner solution:</strong> At λ = {lam:.2f}, the optimal portfolio holds 100% in <strong>{n1}</strong>. Holding any amount of {n2} does not improve the objective at this ESG preference level. Reduce λ to reintroduce {n2}.</div>'
+                st.markdown(corner_html, unsafe_allow_html=True)
+            elif w1_esg <= 0.001:
+                corner_html = f'<div class="warn-box" style="margin-top:10px;"><strong>Corner solution:</strong> At λ = {lam:.2f}, the optimal portfolio holds 100% in <strong>{n2}</strong>. Holding any amount of {n1} does not improve the objective at this ESG preference level. Reduce λ to reintroduce {n1}.</div>'
+                st.markdown(corner_html, unsafe_allow_html=True)
 
         st.markdown('</div>',unsafe_allow_html=True)
 
